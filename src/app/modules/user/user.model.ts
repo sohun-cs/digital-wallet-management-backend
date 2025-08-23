@@ -6,6 +6,8 @@ import { Gender, IAuthentication, IsActive, IUser, Role } from "./user.interface
 const authSchema = new Schema<IAuthentication>({
     provider: { type: String },
     providerId: { type: String },
+}, {
+    _id: false
 })
 
 

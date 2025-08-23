@@ -38,5 +38,5 @@ export interface IUser {
     isDeleted?: boolean,
     wallet?: Types.ObjectId,
     transaction?: Types.ObjectId[],
-    auth: [IAuthentication]
+    auth?: [IAuthentication]
 }
