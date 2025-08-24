@@ -16,7 +16,7 @@ const envConfiguration = (): IEnvVars => {
 
     envVariableArr.forEach((key) => {
         if (!process.env[key]) {
-            console.log(`Missing environment variables: ${key}`)
+            throw new Error(`Missing environment variables: ${key}`)
         }
     });
 
