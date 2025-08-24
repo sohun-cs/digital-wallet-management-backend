@@ -19,24 +19,24 @@ export enum Role {
 }
 
 export interface IAuthentication {
-    provider: string,
+    provider: 'google' | 'credentials',
     providerId: string
 }
 
 export interface IUser {
-    name: string,
+    name?: string,
     email: string,
-    phone: string,
+    phone?: string,
     password: string,
-    nid: string,
-    pin: string,
-    gender: Gender,
-    address: string,
+    nid?: string,
+    pin?: string,
+    gender?: Gender,
+    address?: string,
     role?: Role,
     isVerified?: boolean,
     isActive?: IsActive
     isDeleted?: boolean,
     wallet?: Types.ObjectId,
     transaction?: Types.ObjectId[],
-    auth?: [IAuthentication]
+    auths?: IAuthentication[]
 }

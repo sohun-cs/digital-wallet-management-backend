@@ -5,7 +5,7 @@ class AppError extends Error {
 
     public statusCode: number
 
-    constructor(err: any, statusCode: number, message: string, stack = '') {
+    constructor(statusCode: number, message: string, stack = '') {
         super(message) // Basically the default js's Error class message
 
         this.statusCode = statusCode;
