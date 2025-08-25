@@ -9,12 +9,14 @@ interface IEnvVars {
     SALT_ROUND: string,
     JWT_SECRET: string,
     JWT_EXPIRES: string,
+    SUPER_ADMIN_EMAIL: string,
+    SUPER_ADMIN_PASSWORD: string,
 }
 
 
 const envConfiguration = (): IEnvVars => {
 
-    const envVariableArr = ["DB_URL", "PORT", "NODE_ENV", "SALT_ROUND", "JWT_SECRET", "JWT_EXPIRES"];
+    const envVariableArr = ["DB_URL", "PORT", "NODE_ENV", "SALT_ROUND", "JWT_SECRET", "JWT_EXPIRES", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD"];
 
     envVariableArr.forEach((key) => {
         if (!process.env[key]) {
@@ -29,6 +31,8 @@ const envConfiguration = (): IEnvVars => {
         SALT_ROUND: process.env.SALT_ROUND as string,
         JWT_SECRET: process.env.JWT_SECRET as string,
         JWT_EXPIRES: process.env.JWT_EXPIRES as string,
+        SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+        SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
     }
 }
 
