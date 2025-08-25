@@ -24,6 +24,8 @@ export const AuthCheck = (...allowedRoles: string[]) => (req: Request, res: Resp
             throw new AppError(httpStatus.FORBIDDEN, "You're not permitted to this routes")
         }
 
+        req.user = verifiedToken;
+
         next()
 
     } catch (error) {
