@@ -3,24 +3,32 @@ import AppError from "./AppError";
 import httpStatus from 'http-status-codes';
 import { verifyToken } from "../utils/jwt";
 import { envVars } from "../configs/env.config";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
 export const AuthCheck = (...allowedRoles: string[]) => (req: Request, res: Response, next: NextFunction) => {
 
-    const token = req.headers.authorization;
+    try {
 
-    if (!token) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Unauthorized access");
-    };
+        const token = req.headers.authorization;
 
-    const verifiedToken = verifyToken(token, envVars.JWT_SECRET) as { role: string };
+        if (!token) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Unauthorized access");
+        };
 
-    if (!allowedRoles.includes(verifiedToken.role)) {
-        throw new AppError(httpStatus.FORBIDDEN, "You're not permitted to this routes")
+        //const verifiedToken = verifyToken(token, envVars.JWT_SECRET) as { role: string }; // Approach: 1
+        const verifiedToken = verifyToken(token, envVars.JWT_SECRET) as JwtPayload; // Approach: 2
+
+        if (!allowedRoles.includes(verifiedToken.role)) {
+            throw new AppError(httpStatus.FORBIDDEN, "You're not permitted to this routes")
+        }
+
+        next()
+
+    } catch (error) {
+        next(error);
     }
-
-    next()
 
 }
 
