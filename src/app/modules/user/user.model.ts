@@ -13,7 +13,7 @@ const authSchema = new Schema<IAuthentication>({
 
 
 const userSchema = new Schema<IUser>({
-
+    _id: { type: Schema.Types.ObjectId },
     name: { type: String, trim: true },
     email: { type: String, unique: true, validate: [validator.isEmail, 'This email is bot valid'], required: true },
     phone: { type: String, unique: true, validate: [validator.isMobilePhone, 'Your number is not valid'] },

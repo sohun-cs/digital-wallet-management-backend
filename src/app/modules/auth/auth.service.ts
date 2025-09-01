@@ -1,10 +1,12 @@
-import { envVars } from "../../configs/env.config";
+import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../middlewares/AppError";
-import { generateToken } from "../../utils/jwt";
-import { IUser } from "../user/user.interface";
+import { IsActive, IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status-codes';
+import { generateToken, verifyToken } from "../../utils/jwt";
+import { envVars } from "../../configs/env.config";
+import { createUserToken } from "../../utils/userToken";
 
 
 const credentialLogin = async (payload: Partial<IUser>) => {
@@ -23,24 +25,57 @@ const credentialLogin = async (payload: Partial<IUser>) => {
         throw new AppError(httpStatus.BAD_REQUEST, "Incorrect Password");
     };
 
-    const jwtPayload = {
-        email: isUserExists.email,
-        password: isUserExists.password,
-        role: isUserExists.role
-    };
+    const userToken = await createUserToken(isUserExists);
 
-    const accessToken = generateToken(jwtPayload, envVars.JWT_SECRET, envVars.JWT_EXPIRES)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: pass, ...rest } = isUserExists.toObject();
 
     const loginUser = {
-        accessToken
+        accessToken: userToken.accessToken,
+        refreshToken: userToken.refreshToken,
+        user: rest
     }
 
     return loginUser;
 }
 
 
+
+export const getNewAccessToken = async (refreshToken: string) => {
+
+    const verifiedToken = verifyToken(refreshToken, envVars.JWT_REFRESH_SECRET) as JwtPayload;
+
+    const isUserExists = await User.findOne({ email: verifiedToken.email });
+
+    if (!isUserExists) {
+        throw new AppError(httpStatus.NOT_FOUND, "User doesn't exist");
+    }
+
+    if (isUserExists.isActive === IsActive.Inactive || isUserExists.isActive === IsActive.blocked) {
+        throw new AppError(httpStatus.BAD_GATEWAY, `This user is ${isUserExists.isActive}`)
+    }
+
+    if (isUserExists.isDeleted) {
+        throw new AppError(httpStatus.FORBIDDEN, "This User is Blocked");
+    }
+
+    const jwtPayload = {
+        userId: isUserExists._id,
+        email: isUserExists.email,
+        role: isUserExists.role
+    }
+
+    const accessToken = generateToken(jwtPayload, envVars.JWT_SECRET, envVars.JWT_EXPIRES);
+
+    return accessToken;
+
+}
+
+
+
 export const AuthServices = {
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken
 }
 
 

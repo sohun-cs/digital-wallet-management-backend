@@ -11,12 +11,15 @@ interface IEnvVars {
     JWT_EXPIRES: string,
     SUPER_ADMIN_EMAIL: string,
     SUPER_ADMIN_PASSWORD: string,
+    JWT_REFRESH_SECRET: string,
+    JWT_REFRESH_EXPIRES: string,
 }
 
 
 const envConfiguration = (): IEnvVars => {
 
-    const envVariableArr = ["DB_URL", "PORT", "NODE_ENV", "SALT_ROUND", "JWT_SECRET", "JWT_EXPIRES", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD"];
+    const envVariableArr = ["DB_URL", "PORT", "NODE_ENV", "SALT_ROUND", "JWT_SECRET", "JWT_EXPIRES", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD", "JWT_REFRESH_SECRET",
+        "JWT_REFRESH_EXPIRES"];
 
     envVariableArr.forEach((key) => {
         if (!process.env[key]) {
@@ -33,6 +36,8 @@ const envConfiguration = (): IEnvVars => {
         JWT_EXPIRES: process.env.JWT_EXPIRES as string,
         SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
         SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+        JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
+        JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES as string,
     }
 }
 
