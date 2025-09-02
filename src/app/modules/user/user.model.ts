@@ -16,11 +16,10 @@ const userSchema = new Schema<IUser>({
 
     name: { type: String, trim: true },
     email: { type: String, unique: true, validate: [validator.isEmail, 'This email is bot valid'], required: true },
-    phone: { type: String, unique: true, validate: [validator.isMobilePhone, 'Your number is not valid'] },
-    password: { type: String, minLength: [8, "Password should have minimum 8 digits."], required: true },
+    phone: { type: String, validate: [validator.isMobilePhone, 'Your number is not valid'] },
+    password: { type: String, minLength: [8, "Password should have minimum 8 digits."] },
     nid: {
         type: String,
-        unique: true,
         minlength: [8, 'NID no should have at least 8 numbers'],
         maxlength: [12, "NID no shouldn't have more than 12 numbers"],
         match: [/^[1-9][0-9]{7,11}$/, 'NID must contain only numbers and cannot start with 0']

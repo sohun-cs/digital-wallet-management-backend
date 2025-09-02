@@ -50,7 +50,7 @@ const updateUser = CatchAsync(async (req: Request, res: Response, next: NextFunc
 
     const payload = req.body;
 
-    const user = await UserServices.updateUser(userId, payload, verifiedToken);
+    const user = await UserServices.updateUser(userId, payload, verifiedToken as JwtPayload);
 
     SendResponse(res, {
         statusCode: httpStatus.OK,

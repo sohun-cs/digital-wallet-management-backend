@@ -10,7 +10,7 @@ export const createUserZodSchema = z.object({
         .regex(/(?=.*[A-Z])/, "Password must contain a capital letter")
         .regex(/(?=.*[a-z])/, "Password must contain a small letter")
         .regex(/(?=.*[0-9])/, "Password must contain a number")
-        .regex(/(?=.*[!@#$%&*-^_])/, "Password must contain a special character"),
+        .regex(/(?=.*[!@#$%&*-^_])/, "Password must contain a special character").optional(),
     pin: z.string().optional(),
     address: z.string().max(50, "Address must not exceed 50 characters").optional(),
     nid: z.string().optional(),

@@ -7,7 +7,7 @@ import AppError from "../middlewares/AppError";
 import httpStatus from "http-status-codes";
 
 
-export const createUserToken = async (user: Partial<IUser>) => {
+export const createUserToken = (user: Partial<IUser>) => {
 
     const jwtPayload = {
         _id: user._id,
