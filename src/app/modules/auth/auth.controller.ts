@@ -47,11 +47,38 @@ export const getNewAccessToken = CatchAsync(async (req: Request, res: Response, 
 
     })
 
+});
+
+
+export const logout = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    });
+
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    })
+
+    SendResponse(res, {
+
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User Logged Out Successfully",
+        data: null
+
+    })
+
 })
 
 
 
 export const AuthControllers = {
     credentialLogin,
-    getNewAccessToken
+    getNewAccessToken,
+    logout
 }
