@@ -4,12 +4,15 @@ import httpStatus from 'http-status-codes';
 import { router } from './app/routes/routes';
 import { GlobalErrorHandler } from './app/middlewares/global.error.handler';
 import { notFoundRoute } from './app/middlewares/not.found.route';
+import cookieParser from 'cookie-parser';
 
 
 const app: Application = express();
+
+app.use(cookieParser());
 app.use(express.json());
 app.use("/api/v1", router);
-app.use(cors())
+app.use(cors());
 
 
 app.get('/', (req: Request, res: Response) => {

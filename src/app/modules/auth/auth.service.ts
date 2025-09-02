@@ -1,12 +1,9 @@
-import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../middlewares/AppError";
-import { IsActive, IUser } from "../user/user.interface";
+import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status-codes';
-import { generateToken, verifyToken } from "../../utils/jwt";
-import { envVars } from "../../configs/env.config";
-import { createUserToken } from "../../utils/userToken";
+import { createNewAccessTokenWithRefreshToken, createUserToken } from "../../utils/userToken";
 
 
 const credentialLogin = async (payload: Partial<IUser>) => {
@@ -43,31 +40,11 @@ const credentialLogin = async (payload: Partial<IUser>) => {
 
 export const getNewAccessToken = async (refreshToken: string) => {
 
-    const verifiedToken = verifyToken(refreshToken, envVars.JWT_REFRESH_SECRET) as JwtPayload;
+    const newAccessToken = await createNewAccessTokenWithRefreshToken(refreshToken);
 
-    const isUserExists = await User.findOne({ email: verifiedToken.email });
-
-    if (!isUserExists) {
-        throw new AppError(httpStatus.NOT_FOUND, "User doesn't exist");
-    }
-
-    if (isUserExists.isActive === IsActive.Inactive || isUserExists.isActive === IsActive.blocked) {
-        throw new AppError(httpStatus.BAD_GATEWAY, `This user is ${isUserExists.isActive}`)
-    }
-
-    if (isUserExists.isDeleted) {
-        throw new AppError(httpStatus.FORBIDDEN, "This User is Blocked");
-    }
-
-    const jwtPayload = {
-        userId: isUserExists._id,
-        email: isUserExists.email,
-        role: isUserExists.role
-    }
-
-    const accessToken = generateToken(jwtPayload, envVars.JWT_SECRET, envVars.JWT_EXPIRES);
-
-    return accessToken;
+    return {
+        accessToken: newAccessToken
+    };
 
 }
 
