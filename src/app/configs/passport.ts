@@ -3,7 +3,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVars } from "./env.config";
 import { User } from "../modules/user/user.model";
-import { Role } from "../modules/user/user.interface";
+import { IsActive, Role } from "../modules/user/user.interface";
 import { Strategy as LocalStrategy } from "passport-local";
 import httpStatus from 'http-status-codes'
 import bcrypt from "bcryptjs";
@@ -22,6 +22,14 @@ passport.use(
             return done(null, false, { message: `${httpStatus.NOT_FOUND}: User does not exist` })
         }
 
+        if (isUserExits.isActive === IsActive.Inactive || isUserExits.isActive === IsActive.blocked) {
+            return done(null, false, { message: `This user is ${isUserExits.isActive}` })
+        }
+
+        if (isUserExits.isDeleted) {
+            return done(null, false, { message: 'This user is blocked' })
+        }
+
         const isGoogleAuthenticated = isUserExits.auths?.some(objects => objects.provider === 'google')
 
         if (isGoogleAuthenticated) {
@@ -34,7 +42,7 @@ passport.use(
             return done(null, false, { message: "Password does not match" })
         }
 
-        return done("User created successfully")
+        return done(null, isUserExits)
     })
 )
 
@@ -75,7 +83,6 @@ passport.use((
             return done(null, user)
 
         } catch (error) {
-            console.log("Error: ", error);
             return done(error)
         }
 

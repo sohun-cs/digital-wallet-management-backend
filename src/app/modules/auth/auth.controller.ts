@@ -36,14 +36,14 @@ const credentialLogin = CatchAsync(async (req: Request, res: Response, next: Nex
     passport.authenticate("local", async (err: any, user: any, info: any) => {
 
         if (err) {
-            throw new AppError(401, info.message)
+            return next(new AppError(401, info.message))
         }
 
         if (!user) {
-            throw new AppError(404, info.message)
+            return next(new AppError(404, info.message))
         }
 
-        const userToken = await createUserToken(user);
+        const userToken = createUserToken(user);
 
         // delete user.toObject().password;
         const { password, ...rest } = user.toObject();
