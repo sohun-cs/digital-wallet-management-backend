@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import CatchAsync from "../../utils/catch.async";
@@ -9,24 +10,60 @@ import { setCookie } from "../../utils/sertCookie";
 import { JwtPayload } from "jsonwebtoken";
 import { createUserToken } from "../../utils/userToken";
 import { envVars } from "../../configs/env.config";
+import passport from "passport";
+
+
+// const credentialLogin = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+//     const data = req.body;
+//     const loginInfo = await AuthServices.credentialLogin(data);
+
+//     setCookie(res, loginInfo);
+
+//     SendResponse(res, {
+
+//         statusCode: httpStatus.ACCEPTED,
+//         success: true,
+//         message: "User logging successfully",
+//         data: loginInfo
+
+//     })
+// });
 
 
 const credentialLogin = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    const data = req.body;
-    const loginInfo = await AuthServices.credentialLogin(data);
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
 
-    setCookie(res, loginInfo);
+        if (err) {
+            throw new AppError(401, info.message)
+        }
 
-    SendResponse(res, {
+        if (!user) {
+            throw new AppError(404, info.message)
+        }
 
-        statusCode: httpStatus.ACCEPTED,
-        success: true,
-        message: "User logging successfully",
-        data: loginInfo
+        const userToken = await createUserToken(user);
 
-    })
-});
+        // delete user.toObject().password;
+        const { password, ...rest } = user.toObject();
+
+        setCookie(res, userToken);
+
+        SendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: "User logged in successfully",
+            data: {
+                accessToken: userToken.accessToken,
+                refreshToken: userToken.refreshToken,
+                data: rest
+            }
+        })
+
+    })(req, res, next)
+
+})
 
 
 export const getNewAccessToken = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {

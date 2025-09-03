@@ -4,8 +4,6 @@ import CatchAsync from "../../utils/catch.async";
 import { UserServices } from "./user.service";
 import SendResponse from "../../utils/send.response";
 import httpStatus from "http-status-codes";
-import { verifyToken } from "../../utils/jwt";
-import { envVars } from "../../configs/env.config";
 import { JwtPayload } from "jsonwebtoken";
 
 

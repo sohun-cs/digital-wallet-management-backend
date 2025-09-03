@@ -4,6 +4,40 @@ import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-go
 import { envVars } from "./env.config";
 import { User } from "../modules/user/user.model";
 import { Role } from "../modules/user/user.interface";
+import { Strategy as LocalStrategy } from "passport-local";
+import httpStatus from 'http-status-codes'
+import bcrypt from "bcryptjs";
+
+
+
+passport.use(
+    new LocalStrategy({
+        usernameField: "email",
+        passwordField: "password"
+    }, async (email: string, password: string, done) => {
+
+        const isUserExits = await User.findOne({ email });
+
+        if (!isUserExits) {
+            return done(null, false, { message: `${httpStatus.NOT_FOUND}: User does not exist` })
+        }
+
+        const isGoogleAuthenticated = isUserExits.auths?.some(objects => objects.provider === 'google')
+
+        if (isGoogleAuthenticated) {
+            return done(null, false, { message: "This user already authenticated by google" })
+        }
+
+        const isPasswordMatched = await bcrypt.compare(password, isUserExits.password as string);
+
+        if (!isPasswordMatched) {
+            return done(null, false, { message: "Password does not match" })
+        }
+
+        return done("User created successfully")
+    })
+)
+
 
 
 
